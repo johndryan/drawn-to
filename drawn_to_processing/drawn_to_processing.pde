@@ -4,6 +4,8 @@ import com.modestmaps.core.*;
 import com.modestmaps.geo.*;
 import com.modestmaps.providers.*;
 
+import processing.pdf.*;
+
 Location[] locations;
 
 void setup() {
@@ -24,12 +26,13 @@ void draw() {
   //StaticMap m = new StaticMap(this, new Microsoft.AerialProvider(), new Point2f(width/2, height), new Location(51.5, -0.137), 12);
   StaticMap m = new StaticMap(this, new Microsoft.RoadProvider(), new Point2f(width, height), new Location(40.737893,-74.006653), 12);
   
+  //Fetch and draw map tiles
   PImage img = m.draw(true);
   image(img,0,0);
-
-  println("done");
   
-  stroke(255,255,0);
+  beginRecord(PDF, "output.pdf"); 
+  
+  stroke(0);
   
   noFill();
   beginShape();
@@ -38,19 +41,20 @@ void draw() {
     Location location = locations[i];
     Point2f p = m.locationPoint2f(location);
     vertex(p.x, p.y);
-    //ellipse(p.x, p.y, 10, 10);
+    // curveVertex(p.x, p.y); // Draws curves between points
     //println("Printed " + i + ": " + location.lat + ", " + location.lon + "  ->  " + p.x + ", " + p.y);
   }
   
   endShape();
   
-  println("printing complete");  
+  endRecord();
+  println("Complete");  
 }
 
 void loadXML() {
   XMLElement xml = new XMLElement(this, "checkins.kml" ); 
   int totalLocations = xml.getChild(0).getChildCount();
-  println("totalLocations = " + totalLocations);
+  //println("totalLocations = " + totalLocations);
   
   locations = new Location[totalLocations-2];  // Minus two for name and description elements at top
   
